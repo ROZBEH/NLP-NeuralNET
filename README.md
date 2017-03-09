@@ -1,4 +1,4 @@
-# ESCALES
+# NLP and Neural Networks
 Code for analysising code switching data set. Preprocessing and machine learning tools are developed in these codes.
 Data is available upon request. 
 <br></br>
