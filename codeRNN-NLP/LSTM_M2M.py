@@ -123,7 +123,7 @@ inputfile.close()
 #     for indix, val in enumerate(elems):
 #         elems[indix] = enc.transform(val).toarray().T
 # pickle.dump(feat_vec, open("feat_vec.p", "wb"))
-feat_vec = pickle.load(open("feat_vec.p", 'rb'))
+feat_vec = pickle.load(open("../../feat_vec.p", 'rb'))
 
 
 # Count the word frequencies
@@ -229,9 +229,9 @@ def calculate_total_loss(self, x, y, feat_vec_train):
     for i in np.arange(len(y)):
         o, s = self.forward_propagation(x[i], feat_vec_train[i])[:2]
         # We only care about our prediction of the "correct" words
-        correct_word_predictions = o[y[i]]
+        correct_word_predictions = o[np.arange(len(y[i])), y[i]]
         # Add to the loss based on how off we were
-        L += -1.0 * (np.log(correct_word_predictions))
+        L += -1 * np.sum(np.log(correct_word_predictions))
     return L
  
 def calculate_loss(self, x, y, feat_vec_train):
@@ -340,7 +340,7 @@ def train_with_sgd(model, X_train, y_train, feat_vec_train, learning_rate, nepoc
         
         for i in range(len(y_train)):
             # One SGD step
-            model.sgd_step(X_train[i], y_train[i], learning_rate)
+            model.sgd_step(X_train[i], y_train[i], feat_vec_train[i], learning_rate)
             num_examples_seen += 1
     filename11 = 'numpy_model.sav'
     pickle.dump(model, open(filename11, 'wb'))
@@ -382,8 +382,4 @@ def predict_label(model, X_test,y_test,feat_vec_test):
 # model = pickle.load(open(filename11, 'rb'))
 print " precision, recall, fscore, accuracy = " , predict_label(model, X_test,y_test,feat_vec_test), "Test Data"
 print " precision, recall, fscore, accuracy = " , predict_label(model, X_train,y_train,feat_vec_train), "Train Data"
-# tokenized_sentences
-
 print 'nepoch = ',nepoch ,'vocabulary_size = ' ,vocabulary_size ,'hidden_dim = ' ,hidden_dim ,'learning_rate = ',learning_rate
-
-
