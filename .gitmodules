@@ -1,0 +1,3 @@
+[submodule "RNN-LSTM"]
+	path = RNN-LSTM
+	url = https://github.com/ROZBEH/RNN-LSTM
