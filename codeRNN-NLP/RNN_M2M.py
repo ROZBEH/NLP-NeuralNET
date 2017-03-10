@@ -9,20 +9,14 @@ import re
 import os
 import time
 from datetime import datetime
-from utils import *
 import pickle
 from gensim.models import word2vec
 from sklearn.preprocessing import OneHotEncoder
 import warnings
+import RNNM2MClass as M2M
 warnings.filterwarnings("ignore")
 enc = OneHotEncoder()
 
-# import logging_MODEL_FILE
-# logging.basicConfig(format='%(asctime)s : %(levelname)s : %(message)s', level=logging.INFO)
-# Reading the input Google word2vec model
-#model_vec = word2vec.Word2Vec.load_word2vec_format('/Users/ScrmBison/Desktop/GoogleNews-vectors-negative300.bin', binary=True)
-#model_vec = word2vec.Word2Vec.load_word2vec_format('/Users/Rouzbeh/BoxSync/Fall2016/ESCALES/GoogleNews-vectors-negative300.bin', binary=True)
-#_VECTOR_SIZE = int(os.environ.get('VECTOR_SIZE', '300'))
 _HIDDEN_DIM = int(os.environ.get('HIDDEN_DIM', '400'))
 _LEARNING_RATE = float(os.environ.get('LEARNING_RATE', '0.00625'))
 _NEPOCH = int(os.environ.get('NEPOCH', '30'))
@@ -156,109 +150,6 @@ feat_vec_test = feat_vec[int(.8*len(feat_vec)):]
 
 
 
-class RNNNumpy:
-     
-    def __init__(self, word_dim, hidden_dim=100, bptt_truncate=4):
-        # Assign instance variables
-        self.word_dim = word_dim
-        self.hidden_dim = hidden_dim
-        self.bptt_truncate = bptt_truncate
-        # Randomly initialize the network parameters
-        self.U = np.random.uniform(-np.sqrt(1./word_dim), np.sqrt(1./word_dim), (hidden_dim, word_dim))
-        # we have 2 output labels as a result we put 2 here.
-        self.V = np.random.uniform(-np.sqrt(1./hidden_dim), np.sqrt(1./hidden_dim), (2, hidden_dim))
-        self.W = np.random.uniform(-np.sqrt(1./hidden_dim), np.sqrt(1./hidden_dim), (hidden_dim, hidden_dim))
-
-def forward_propagation(self, x, feat_vec_train):
-    # The total number of time steps
-    T = len(x)
-    # During forward propagation we save all hidden states in s because need them later.
-    # We add one additional element for the initial hidden, which we set to 0
-    s = np.zeros((T + 1, self.hidden_dim))
-    s[-1] = np.zeros(self.hidden_dim)
-    # The outputs at each time step. Again, we save them for later.
-    #output has two labels as a result we put two here
-    o = np.zeros((T, 2))
-    # For each time step...
-    for t in np.arange(T):
-        # this is the second feature vector that I am concatenating to the end of the feature vector
-        # Note that we are indxing U by x[t]. This is the same as multiplying U with a one-hot vector.
-        s[t] = np.tanh(self.U[: , x[t]] + self.U[:,self.word_dim-24:].dot(feat_vec_train[t]).reshape((-1,)) + self.W.dot(s[t-1]))
-        o[t] = softmax(self.V.dot(s[t]))
-    return [o, s]
-RNNNumpy.forward_propagation = forward_propagation
-
-def predict(self, x,feat_vec_train):
-    # Perform forward propagation and return index of the highest score
-    o, s = self.forward_propagation(x,feat_vec_train)
-    return np.argmax(o, axis=1)
- 
-RNNNumpy.predict = predict
-
-
-def calculate_total_loss(self, x, y,feat_vec_train):
-    L = 0
-    # For each sentence...
-    for i in np.arange(len(y)):
-        o, s = self.forward_propagation(x[i],feat_vec_train[i])
-        # We only care about our prediction of the "correct" words
-        correct_word_predictions = o[np.arange(len(y[i])), y[i]]
-        # Add to the loss based on how off we were
-        L += -1 * np.sum(np.log(correct_word_predictions))
-    return L
- 
-def calculate_loss(self, x, y, feat_vec_train):
-    # Divide the total loss by the number of training examples
-    N = np.sum((len(y_i) for y_i in y))
-    return self.calculate_total_loss(x, y, feat_vec_train)/N
- 
-RNNNumpy.calculate_total_loss = calculate_total_loss
-RNNNumpy.calculate_loss = calculate_loss
-
-def bptt(self, x, y,feat_vec_train):
-    T = len(y)
-    # Perform forward propagation
-    o, s = self.forward_propagation(x,feat_vec_train)
-    # We accumulate the gradients in these variables
-    dLdU = np.zeros(self.U.shape)
-    dLdV = np.zeros(self.V.shape)
-    dLdW = np.zeros(self.W.shape)
-    delta_o = o
-    delta_o[np.arange(len(y)), y] -= 1.
-    # For each output backwards...
-    for t in np.arange(T)[::-1]:
-        dLdV += np.outer(delta_o[t], s[t].T)
-        # Initial delta calculation
-        delta_t = self.V.T.dot(delta_o[t]) * (1 - (s[t] ** 2))
-        # Backpropagation through time (for at most self.bptt_truncate steps)
-        for bptt_step in np.arange(max(0, t-self.bptt_truncate), t+1)[::-1]:
-            # print "Backpropagation step t=%d bptt step=%d " % (t, bptt_step)
-            dLdW += np.outer(delta_t, s[bptt_step-1])              
-            # for the first part of the feature vector which is the word itself
-            feat2 = feat_vec_train[bptt_step].reshape((-1,))
-            dLdU[:,x[bptt_step]] += delta_t
-            # for the first part of the feature vector which is the language of the word
-            dLdU[:,self.word_dim-24:] += np.outer(delta_t, feat2)
-            # Update delta for next step
-            delta_t = self.W.T.dot(delta_t) * (1 - s[bptt_step-1] ** 2)
-    return [dLdU, dLdV, dLdW]
- 
-RNNNumpy.bptt = bptt
-
-
-# Performs one step of SGD.
-def numpy_sgd_step(self, x, y,feat_vec_train, learning_rate):
-    # Calculate the gradients
-    dLdU, dLdV, dLdW = self.bptt(x, y,feat_vec_train)
-    # Change parameters according to gradients and learning rate
-    self.U -= learning_rate * dLdU
-    self.V -= learning_rate * dLdV
-    self.W -= learning_rate * dLdW
- 
-RNNNumpy.sgd_step = numpy_sgd_step
-
-
-
 
 
 
@@ -294,7 +185,9 @@ def train_with_sgd(model, X_train, y_train, feat_vec_train, learning_rate=0.005,
     filename11 = 'numpy_model.sav'
     pickle.dump(model, open(filename11, 'wb'))
 
+# this function is for the classification task of the output labels and the correspoding classification metrics
 def predict_label(model, X_test,y_test,feat_vec_test):
+    # Metrics here are self defining, one can understanf just by following them
     true_pos = 0
     true_neg = 0
     false_pos = 0
@@ -322,15 +215,16 @@ def predict_label(model, X_test,y_test,feat_vec_test):
     return precision, recall, fscore, accuracy
 
 
-model = RNNNumpy(vocabulary_size + features2, hidden_dim)
+model = M2M.RNNNumpy(vocabulary_size + features2, hidden_dim)
 train_with_sgd(model, X_train, y_train, feat_vec_train, learning_rate, nepoch, evaluate_loss_after)
 
 
 
 # filename11 = 'numpy_model.sav'
 # model = pickle.load(open(filename11, 'rb'))
+# Calling predict_label function and printing the results
 print " precision, recall, fscore, accuracy = " , predict_label(model, X_test,y_test,feat_vec_test), "Test Data"
 print " precision, recall, fscore, accuracy = " , predict_label(model, X_train,y_train,feat_vec_train), "Train Data"
 # tokenized_sentences
-
+# At the end we print the constant that we used during this run of the simluation
 print 'nepoch = ',nepoch ,'vocabulary_size = ' ,vocabulary_size ,'hidden_dim = ' ,hidden_dim ,'learning_rate = ',learning_rate
