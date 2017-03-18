@@ -20,7 +20,7 @@ import warnings
 import LSTMM2MClass as M2M
 warnings.filterwarnings("ignore")
 
-_HIDDEN_DIM = int(os.environ.get('HIDDEN_DIM', '400'))
+_HIDDEN_DIM = int(os.environ.get('HIDDEN_DIM', '100'))
 _LEARNING_RATE = float(os.environ.get('LEARNING_RATE', '0.00625'))
 _NEPOCH = int(os.environ.get('NEPOCH', '30'))
 evaluate_loss_after = 2
@@ -212,7 +212,7 @@ def train_with_sgd(model, X_train, y_train, feat_vec_train, learning_rate, nepoc
                 print i
     filename11 = 'numpy_model.sav'
     pickle.dump(model, open(filename11, 'wb'))
-model = M2M.LSTMNumpy(vector_size,hidden_dim)
+model = M2M.LSTMNumpy(vector_size, hidden_dim)
 train_with_sgd(model, X_train, y_train, feat_vec_train, learning_rate, nepoch, evaluate_loss_after)
 
 

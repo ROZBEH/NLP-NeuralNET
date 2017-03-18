@@ -22,6 +22,7 @@ vocabulary_size = _VOCABULARY_SIZE
 unknown_token = "UNKNOWN_TOKEN"
 sentence_start_token = "SENTENCE_START"
 sentence_end_token = "SENTENCE_END"
+hidden_dim = _HIDDEN_DIM
 
 # Read the data and append SENTENCE_START and SENTENCE_END tokens
 print "Reading CSV file..."

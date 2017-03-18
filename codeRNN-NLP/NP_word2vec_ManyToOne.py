@@ -244,7 +244,7 @@ def train_with_sgd(model, X_train, y_train, learning_rate, nepoch, evaluate_loss
     pickle.dump(model, open(filename11, 'wb'))
 
 
-model = RNNNumpy(vector_size,hidden_dim)
+model = RNNNumpy(vector_size, hidden_dim)
 train_with_sgd(model, X_train, y_train, learning_rate, nepoch, evaluate_loss_after)
 
 

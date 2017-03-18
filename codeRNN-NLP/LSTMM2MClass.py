@@ -10,7 +10,7 @@ from utils import *
 
 
 class LSTMNumpy:
-    def __init__(self, vector_dim ,label_dim = 2, hidden_dim=100, bptt_truncate=4):
+    def __init__(self, vector_dim, hidden_dim=100, label_dim = 2, bptt_truncate=4):
         # Assign instance variables
         self.label_dim = label_dim
         self.hidden_dim = hidden_dim

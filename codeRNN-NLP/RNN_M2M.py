@@ -17,7 +17,7 @@ import RNNM2MClass as M2M
 warnings.filterwarnings("ignore")
 enc = OneHotEncoder()
 
-_HIDDEN_DIM = int(os.environ.get('HIDDEN_DIM', '400'))
+_HIDDEN_DIM = int(os.environ.get('HIDDEN_DIM', '100'))
 _LEARNING_RATE = float(os.environ.get('LEARNING_RATE', '0.00625'))
 _NEPOCH = int(os.environ.get('NEPOCH', '30'))
 evaluate_loss_after = 2
