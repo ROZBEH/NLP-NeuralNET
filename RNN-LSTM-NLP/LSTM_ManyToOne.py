@@ -105,7 +105,7 @@ y_test = y[5000:]
 
 class RNNNumpy:
      
-    def __init__(self, vector_dim ,label_dim = 6, hidden_dim=100, bptt_truncate=4):
+    def __init__(self, vector_dim, hidden_dim=100, label_dim = 6, bptt_truncate=4):
         # Assign instance variables
         self.label_dim = label_dim
         self.hidden_dim = hidden_dim
@@ -292,7 +292,7 @@ def train_with_sgd(model, X_train, y_train, learning_rate, nepoch, evaluate_loss
     pickle.dump(model, open(filename11, 'wb'))
 
 
-model = RNNNumpy(vector_size,hidden_dim)
+model = RNNNumpy(vector_size, hidden_dim)
 train_with_sgd(model, X_train, y_train, learning_rate, nepoch, evaluate_loss_after)
 
 

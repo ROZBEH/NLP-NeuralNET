@@ -19,7 +19,7 @@ enc = OneHotEncoder()
 
 _HIDDEN_DIM = int(os.environ.get('HIDDEN_DIM', '100'))
 _LEARNING_RATE = float(os.environ.get('LEARNING_RATE', '0.00625'))
-_NEPOCH = int(os.environ.get('NEPOCH', '30'))
+_NEPOCH = int(os.environ.get('NEPOCH', '10'))
 evaluate_loss_after = 2
 # I just want to have all of the word tokens that's why I used 10823 here
 vocabulary_size = 3000

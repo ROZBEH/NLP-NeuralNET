@@ -22,6 +22,7 @@ vocabulary_size = _VOCABULARY_SIZE
 unknown_token = "UNKNOWN_TOKEN"
 sentence_start_token = "SENTENCE_START"
 sentence_end_token = "SENTENCE_END"
+hidden_dim = _HIDDEN_DIM
 print "Reading the input file"
 inputfile = open("all_data.label",'r')
 
@@ -93,7 +94,7 @@ y_test = y[5452:]
 
 class RNNNumpy:
      
-    def __init__(self, word_dim ,label_dim = 6, hidden_dim = 70, bptt_truncate = 6):
+    def __init__(self, word_dim , hidden_dim = 70, label_dim = 6, bptt_truncate = 6):
         # Assign instance variables
         self.label_dim = label_dim
         self.hidden_dim = hidden_dim
@@ -250,7 +251,7 @@ def train_with_sgd(model, X_train, y_train, learning_rate=0.0025, nepoch=1000, e
     pickle.dump(model, open(filename11, 'wb'))
 
 
-model = RNNNumpy(vocabulary_size)
+model = RNNNumpy(vocabulary_size, hidden_dim)
 train_with_sgd(model, X_train, y_train, nepoch = 1000, evaluate_loss_after = 2)
 
 

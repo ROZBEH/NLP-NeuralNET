@@ -1,7 +1,7 @@
 # Here are dealing with the RNNNUMPY class for the task of prediction
 import numpy as np
 from utils import *
-
+from datetime import datetime
 class RNNNumpy:
      
     def __init__(self, word_dim, hidden_dim=100, bptt_truncate=4):
@@ -29,10 +29,28 @@ def forward_propagation(self, x, feat_vec_train):
     for t in np.arange(T):
         # this is the second feature vector that I am concatenating to the end of the feature vector
         # Note that we are indxing U by x[t]. This is the same as multiplying U with a one-hot vector.
+        A = datetime.now()
         s[t] = np.tanh(self.U[: , x[t]] + self.U[:,self.word_dim-24:].dot(feat_vec_train[t]).reshape((-1,)) + self.W.dot(s[t-1]))
+        B = datetime.now()
+        print "s[t] time = ", self.timenow(A,B)
         o[t] = softmax(self.V.dot(s[t]))
+        A = datetime.now()
+        print "o[t] time = ", self.timenow(B,A)
     return [o, s]
 RNNNumpy.forward_propagation = forward_propagation
+
+
+def timenow(self, A, B):
+    TT = str(A).split(' ')[1].split(':')
+    TT = [int(TT[0]), int(TT[1]), float(TT[2])]
+    QQ = str(B).split(' ')[1].split(':')
+    QQ = [int(QQ[0]), int(QQ[1]), float(QQ[2])]
+    dif = (QQ[0]-TT[0])*3600 + (QQ[1]-TT[1])*60 + (QQ[2]-TT[2])
+    return dif
+
+RNNNumpy.timenow = timenow
+
+
 
 def predict(self, x,feat_vec_train):
     # Perform forward propagation and return index of the highest score
@@ -82,11 +100,16 @@ def bptt(self, x, y,feat_vec_train):
             dLdW += np.outer(delta_t, s[bptt_step-1])              
             # for the first part of the feature vector which is the word itself
             feat2 = feat_vec_train[bptt_step].reshape((-1,))
+            A = datetime.now()
             dLdU[:,x[bptt_step]] += delta_t
             # for the first part of the feature vector which is the language of the word
             dLdU[:,self.word_dim-24:] += np.outer(delta_t, feat2)
+            B = datetime.now()
+            print "dLdU time = ", self.timenow(A,B)
             # Update delta for next step
             delta_t = self.W.T.dot(delta_t) * (1 - s[bptt_step-1] ** 2)
+            A = datetime.now()
+            print "delta_t time = ", self.timenow(B,A)
     return [dLdU, dLdV, dLdW]
  
 RNNNumpy.bptt = bptt
@@ -102,3 +125,8 @@ def numpy_sgd_step(self, x, y,feat_vec_train, learning_rate):
     self.W -= learning_rate * dLdW
  
 RNNNumpy.sgd_step = numpy_sgd_step
+
+
+
+
+

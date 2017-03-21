@@ -24,6 +24,7 @@ sentence_start_token = "SENTENCE_START"
 sentence_end_token = "SENTENCE_END"
 print "Reading the input file"
 inputfile = open("all_data.label",'r')
+hidden_dim = _HIDDEN_DIM
 
 inputfile_1 = open("list",'r')
 input_1 = inputfile_1.readlines()
@@ -93,7 +94,7 @@ y_test = y[5452:]
 
 class RNNNumpy:
      
-    def __init__(self, word_dim ,label_dim = 6, hidden_dim = 70, bptt_truncate = 6):
+    def __init__(self, word_dim , hidden_dim = 70, label_dim = 6, bptt_truncate = 6):
         # Assign instance variables
         self.label_dim = label_dim
         self.hidden_dim = hidden_dim
@@ -249,7 +250,7 @@ for item in X_train:
             max1 = it
 print max1
 
-# model = RNNNumpy(vocabulary_size)
+# model = RNNNumpy(vocabulary_size, hidden_dim)
 # train_with_sgd(model, X_train, y_train, nepoch = 1000, evaluate_loss_after = 2)
 
 

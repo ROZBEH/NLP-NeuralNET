@@ -22,7 +22,7 @@ warnings.filterwarnings("ignore")
 
 _HIDDEN_DIM = int(os.environ.get('HIDDEN_DIM', '100'))
 _LEARNING_RATE = float(os.environ.get('LEARNING_RATE', '0.00625'))
-_NEPOCH = int(os.environ.get('NEPOCH', '30'))
+_NEPOCH = int(os.environ.get('NEPOCH', '2'))
 evaluate_loss_after = 2
 # I just want to have all of the word tokens that's why I used 10823 here
 vocabulary_size = 3000
@@ -208,13 +208,13 @@ def train_with_sgd(model, X_train, y_train, feat_vec_train, learning_rate, nepoc
             # One SGD step
             model.sgd_step(X_train[i], y_train[i], feat_vec_train[i], learning_rate)
             num_examples_seen += 1
+            # print len(y_train)
             if i% 100 == 0:
                 print i
     filename11 = 'numpy_model.sav'
     pickle.dump(model, open(filename11, 'wb'))
 model = M2M.LSTMNumpy(vector_size, hidden_dim)
 train_with_sgd(model, X_train, y_train, feat_vec_train, learning_rate, nepoch, evaluate_loss_after)
-
 
 
 
@@ -227,11 +227,15 @@ def predict_label(model, X_test,y_test,feat_vec_test):
     true_neg = 0
     false_pos = 0
     false_neg = 0
+    print len(y_test)
     for i in range(len(y_test)):
         predicted = model.predict(X_test[i],feat_vec_test[i])
         #print predicted
         predicted = predicted.tolist()
+        # print predicted
+        # print y_test[i]
         for j in range(len(y_test[i])):
+            # print j
             if predicted[j] == y_test[i][j]:
                 if predicted[j] == 1:
                     true_pos += 1
@@ -242,7 +246,7 @@ def predict_label(model, X_test,y_test,feat_vec_test):
                     false_pos += 1
                 else:
                     false_neg += 1
-    print "true_pos",true_pos, "false_pos", false_pos
+    print "true_pos = ",true_pos, "false_pos = ", false_pos
     precision = (true_pos)/float(true_pos + false_pos)
     recall = (true_pos)/float(true_pos + false_neg)
     fscore = (2*precision*recall)/float(precision+recall)
@@ -258,7 +262,7 @@ def predict_label(model, X_test,y_test,feat_vec_test):
 # filename11 = 'numpy_model.sav'
 # model = pickle.load(open(filename11, 'rb'))
 # Calling predict_label function and printing the results
-print " precision, recall, fscore, accuracy = " , predict_label(model, X_test,y_test,feat_vec_test), "Test Data"
+# print " precision, recall, fscore, accuracy = " , predict_label(model, X_test,y_test,feat_vec_test), "Test Data"
 print " precision, recall, fscore, accuracy = " , predict_label(model, X_train,y_train,feat_vec_train), "Train Data"
 # At the end we print the constant that we used during this run of the simluation
 print 'nepoch = ',nepoch ,'vocabulary_size = ' ,vocabulary_size ,'hidden_dim = ' ,hidden_dim ,'learning_rate = ',learning_rate
