@@ -10,20 +10,21 @@ def timenow(A, B):
 
 
 
+a = np.ones((400,3124))
+b = np.zeros(3124)
+b[1] = 1
 
-X1 = np.zeros([300,10000])
+
+
 A = datetime.now()
-Y1 = X1[:,500:]
+c = a[:,1]
 B = datetime.now()
 print timenow(A,B)
 
-
-X2 = np.zeros(300)
-Y2 = np.zeros(300)
 A = datetime.now()
-Z2 = X2 * Y2
+d = np.dot(a,b)
 B = datetime.now()
 print timenow(A,B)
-print X2
 
-
+print c.shape
+print d.shape
